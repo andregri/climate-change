@@ -14,4 +14,7 @@ class CityTemperature(db.Model):
     longitude = db.Column(db.String)
 
     def __repr__(self):
-        return f'{self.id}: {self.city} - {self.temperature}°'
+        return f"""
+            {self.id}, {self.dt}, {self.temperature}, {self.uncertainty},
+            {self.city}, {self.country}, {self.latitude}, {self.longitude}
+        """
