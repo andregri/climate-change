@@ -2,18 +2,37 @@ version: "3.9"
 
 services:
   api:
-    image: nginx
-    ports:
-      - 5000:5000
+    build: ./api
+    restart: always
+    environment:
+      FLASK_ENV: development
+      FLASK_DEBUG: "on"
+      FLASK_RUN_HOST: 0.0.0.0
+      FLASK_APP: app.py
+    ports: 
+      - '5000:5000'
+    volumes:
+      - './api:/usr/src/app'
+    networks:
+      - web_network
+      - db_network
     depends_on:
       - db
 
   db:
     build: ./db
     ports:
-      - 5433:5432
+      - 5432:5432
     volumes:
       - db_data:/var/lib/postgresql/data
+    networks:
+      - db_network
 
 volumes:
   db_data: {}
+
+networks:
+  db_network:
+    driver: bridge
+  web_network:
+    driver: bridge
