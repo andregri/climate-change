@@ -7,7 +7,7 @@ USER = os.getenv('POSTGRES_USER')
 PASSWORD = os.getenv('POSTGRES_PASSWORD')
 DB = os.getenv('POSTGRES_DB')
 
-db_string = f"postgres://{USER}:{PASSWORD}@127.0.0.1:5432/{DB}"
+db_string = f"postgresql://{USER}:{PASSWORD}@localhost:5432/{DB}"
 
 db = create_engine(db_string)
 
@@ -15,6 +15,7 @@ print("Hello")
 
 with open('GlobalLandTemperaturesByCity.csv') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
+    next(csv_reader) # skip header line
     for row in csv_reader:
         date = row[0]
         temp = float(row[1])
