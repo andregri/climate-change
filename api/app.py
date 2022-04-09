@@ -1,6 +1,6 @@
 from flask import Flask, request, make_response, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import desc, func
+from sqlalchemy import desc, func, and_
 
 
 app = Flask(__name__)
@@ -63,12 +63,18 @@ def top():
     n = request_data['n']
     start_date = request_data['start_date']
     end_date = request_data['end_date']
-    rows = db.session.query(CityTemperature.city, func.max(CityTemperature.temperature).label('max_temp')) \
-            .filter(CityTemperature.dt >= start_date) \
-            .filter(CityTemperature.dt <= end_date) \
-            .group_by(CityTemperature.city) \
-            .order_by(desc('max_temp')) \
-            .limit(n)
+    subq = db.session.query(
+            func.max(CityTemperature.temperature).label('max_temp'),
+            CityTemperature.city
+        ) \
+        .filter(CityTemperature.dt >= start_date) \
+        .filter(CityTemperature.dt <= end_date) \
+        .group_by(CityTemperature.city) \
+        .order_by(desc('max_temp')) \
+        .limit(n) \
+        .subquery()
+    rows = db.session.query(CityTemperature).join(subq, and_(CityTemperature.city==subq.c.city,CityTemperature.temperature==subq.c.max_temp)) \
+        .order_by(desc(CityTemperature.temperature))
 
     res = "".join([str(r) + '\n' for r in rows])
     return res
