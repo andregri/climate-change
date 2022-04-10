@@ -1,4 +1,3 @@
-import json
 from flask import Flask, request, make_response, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc, func, and_
@@ -15,48 +14,42 @@ from models import CityTemperature
 @app.route('/temp', methods=['POST'])
 def create():
     request_data = request.get_json()
-    date = request_data['date']
-    temp = request_data['temperature']
-    unct = request_data['uncertainty']
-    city = request_data['city']
-    cnty = request_data['country']
-    llat = request_data['latitude']
-    long = request_data['longitude']
 
-    new_temp = CityTemperature(dt=date, temperature=temp, uncertainty=unct,
-        city=city, country=cnty, latitude=llat, longitude=long)
-
-    db.session.add(new_temp)
-    db.session.commit()
+    if not 'dt' in request_data:
+        return make_response(jsonify({'message': 'You must specify a value for dt'}), 400)
     
-    res = make_response(jsonify({"message": f"Row {new_temp.id} created"}), 201)
+    if not 'city' in request_data:
+        return make_response(jsonify({'message': 'You must specify a value for city'}), 400)
+
+    date = request_data['dt']
+    city = request_data['city']
+    row = CityTemperature.query.filter_by(city=city, dt=date).first()
+    if row:
+        try:
+            row.temperature = request_data['temperature']
+            row.uncertainty = request_data['uncertainty']
+        except ValueError as e:
+            res = make_response(jsonify({'message': str(e)}), 400)
+        else:
+            db.session.commit()
+            res = make_response(jsonify({"message": f"Row {row.id} updated"}), 200)
+        
+    else:
+        try:
+            new_row = CityTemperature(**request_data)
+        except ValueError as e:
+            res = make_response(jsonify({'message': str(e)}), 400)
+        else:
+            db.session.add(new_row)
+            db.session.commit()
+            res = make_response(jsonify({"message": f"Row {new_row.id} created"}), 201)
+
     return res
 
 @app.route('/temp/<int:id>', methods=['GET'])
 def get_by_id(id):
     temp = CityTemperature.query.filter_by(id=id).first()
     return str(temp)
-
-@app.route('/temp', methods=['PATCH'])
-def update():
-    request_data = request.get_json()
-    city = request_data['city']
-    date = request_data['date']
-    temp = request_data['temperature']
-    unct = request_data['uncertainty']
-
-    row = CityTemperature.query.filter_by(city=city, dt=date).first()
-    if row:
-        row.temperature = temp
-        row.uncertainty = unct
-        res = make_response(jsonify({"message": f"Row {row.id} updated"}), 200)
-        
-    else:
-        new_row = CityTemperature(dt=date, temperature=temp, uncertainty=unct, city=city)
-        db.session.add(new_row)
-    
-    db.session.commit()
-    return res
 
 @app.route('/top', methods=['GET'])
 def top():

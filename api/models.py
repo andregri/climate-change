@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import date
 from app import db
+from sqlalchemy.orm import validates
 
 
 @dataclass
@@ -23,6 +24,18 @@ class CityTemperature(db.Model):
     country = db.Column(db.String)
     latitude = db.Column(db.String)
     longitude = db.Column(db.String)
+
+    @validates('temperature')
+    def validate_temperature(self, key, temp):
+        if temp < -273.15:
+            raise ValueError("Invalid temperature")
+        return temp
+    
+    @validates('uncertainty')
+    def validate_uncertainty(self, key, uncertainty):
+        if uncertainty < 0:
+            raise ValueError("Invalid uncertainty")
+        return uncertainty
 
     def __repr__(self):
         return f"""
