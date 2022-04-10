@@ -1,7 +1,12 @@
 # Climate Change API
+A restful API implemented with **Python Flask** to navigate the monthly average temperatures of cities in the world.
+
+The dataset is loaded in a **Postgresql** database.
+
+The backend server and the database are containerized using **Docker** and **docker-compose**.
 
 # Requirements
-Download the dataset [GlobalLandTemperaturesByCity.csv](https://www.kaggle.com/datasets/berkeleyearth/climate-change-earth-surface-temperature-data?select=GlobalLandTemperaturesByCity.csv) into `db` folder.
+Download and extract the dataset [GlobalLandTemperaturesByCity.csv](https://www.kaggle.com/datasets/berkeleyearth/climate-change-earth-surface-temperature-data?select=GlobalLandTemperaturesByCity.csv) into `db` folder.
 
 # Installation
 Open a terminal and cd to the folder in which `docker-compose.yml` is saved.
@@ -84,3 +89,14 @@ Response body:
   "message": "Row 117010 updated"
 }
 ```
+
+# Hours needed
+| Day | Hours |
+|:---|---:|
+| Wednesday 6 | 2 |
+| Thursday 7 | 1 |
+| Friday 8 | 3 |
+| Saturday 9 | 1 |
+| Sunday 10 | 3 |
+| Monday 11 | |
+| **Total** | **10** |
