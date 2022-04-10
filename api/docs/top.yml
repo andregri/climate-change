@@ -1,0 +1,40 @@
+Return the top N cities that have the highest monthly AverageTemperature in
+a specified time range
+---
+tags:
+  - Temperature
+  
+definitions:
+  Constraints:
+    type: object
+    properties:
+      n:
+        type: integer
+        example: 5
+      start_date:
+        type: string
+        format: date
+        example: "1970-01-01"
+      end_date:
+        type: string
+        format: date
+        example: "2022-06-05"
+    required:
+      - n
+      - start_date
+      - end_date
+
+parameters:
+  - in: body
+    name: body
+    schema:
+        $ref: '#/definitions/Constraints'
+
+responses:
+  200:
+    description: Temperature measurement updated
+    content: application/json
+
+  400:
+    description: Invalid body
+    content: application/json

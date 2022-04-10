@@ -1,0 +1,52 @@
+Create a new temperature measurement or update an existing one 
+---
+tags:
+  - Temperature
+  
+definitions:
+  CityTemperature:
+    type: object
+    properties:
+      dt:
+        type: string
+        format: date
+      temperature:
+        type: number
+        example: 17.2
+      uncertainty:
+        type: number
+        example: 1.2
+      city:
+        type: string
+        example: Genoa
+      country:
+        type: string
+        example: Italy
+      latitude:
+        type: string
+        example: 44.4N
+      longitude:
+        type: string
+        example: 8.9E
+    required:
+      - dt
+      - city
+
+parameters:
+  - in: body
+    name: body
+    schema:
+        $ref: '#/definitions/CityTemperature'
+
+responses:
+  200:
+    description: Temperature measurement updated
+    content: application/json
+  
+  201:
+    description: Temperature measurement created
+    content: application/json
+
+  400:
+    description: Invalid body
+    content: application/json

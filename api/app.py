@@ -1,17 +1,20 @@
 from flask import Flask, request, make_response, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc, func, and_
+from flasgger import Swagger, swag_from
 
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://andrea:password@db:5432/climate_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+swagger = Swagger(app)
 
 from models import CityTemperature
 
 
 @app.route('/temp', methods=['POST'])
+@swag_from('./docs/post_temp.yml')
 def create():
     request_data = request.get_json()
 
@@ -47,11 +50,16 @@ def create():
     return res
 
 @app.route('/temp/<int:id>', methods=['GET'])
+@swag_from('./docs/get_temp.yml')
 def get_by_id(id):
     temp = CityTemperature.query.filter_by(id=id).first()
-    return str(temp)
+    if temp:
+        return make_response(jsonify(temp), 200)
+    else:
+        return make_response(jsonify({'message': 'Id not found'}), 400)
 
-@app.route('/top', methods=['GET'])
+@app.route('/top', methods=['POST'])
+@swag_from('./docs/top.yml')
 def top():
     request_data = request.get_json()
     n = request_data['n']
