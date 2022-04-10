@@ -1,3 +1,4 @@
+import json
 from flask import Flask, request, make_response, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc, func, and_
@@ -61,8 +62,14 @@ def update():
 def top():
     request_data = request.get_json()
     n = request_data['n']
+    if n and n <= 0:
+        return make_response(jsonify({'message': 'Invalid n'}), 400)
+
     start_date = request_data['start_date']
     end_date = request_data['end_date']
+    if start_date >= end_date:
+        return make_response(jsonify({'message': 'end_date must be later the start_date'}), 400)
+
     subq = db.session.query(
             func.max(CityTemperature.temperature).label('max_temp'),
             CityTemperature.city
@@ -73,11 +80,13 @@ def top():
         .order_by(desc('max_temp')) \
         .limit(n) \
         .subquery()
-    rows = db.session.query(CityTemperature).join(subq, and_(CityTemperature.city==subq.c.city,CityTemperature.temperature==subq.c.max_temp)) \
-        .order_by(desc(CityTemperature.temperature))
 
-    res = "".join([str(r) + '\n' for r in rows])
-    return res
+    top_temperatures = db.session.query(CityTemperature). \
+        join(subq, and_(CityTemperature.city==subq.c.city, CityTemperature.temperature==subq.c.max_temp)). \
+        order_by(desc(CityTemperature.temperature)).all()
+
+    return make_response(jsonify(top_temperatures), 200)
+
 
 if __name__ == '__main__':
     app.run()

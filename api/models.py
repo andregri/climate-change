@@ -1,8 +1,19 @@
+from dataclasses import dataclass
+from datetime import date
 from app import db
 
 
+@dataclass
 class CityTemperature(db.Model):
     __tablename__ = 'city_temperature'
+    id: int
+    dt: date
+    temperature: float
+    uncertainty: float
+    city: str
+    country: str
+    latitude: str
+    longitude: str
 
     id = db.Column(db.Integer, primary_key=True)
     dt = db.Column(db.Date)
@@ -15,6 +26,5 @@ class CityTemperature(db.Model):
 
     def __repr__(self):
         return f"""
-            {self.id}, {self.dt}, {self.temperature}, {self.uncertainty},
-            {self.city}, {self.country}, {self.latitude}, {self.longitude}
+            {self.id}, {self.dt}, {self.temperature}, {self.uncertainty}, {self.city}
         """
