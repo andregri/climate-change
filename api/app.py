@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response, jsonify
+from flask import Flask, request, make_response, jsonify, redirect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc, func, and_
 from flasgger import Swagger, swag_from
@@ -35,7 +35,7 @@ def create():
             res = make_response(jsonify({'message': str(e)}), 400)
         else:
             db.session.commit()
-            res = make_response(jsonify({"message": f"Row {row.id} updated"}), 200)
+            res = make_response(jsonify(row), 200)
         
     else:
         try:
@@ -45,18 +45,9 @@ def create():
         else:
             db.session.add(new_row)
             db.session.commit()
-            res = make_response(jsonify({"message": f"Row {new_row.id} created"}), 201)
+            res = make_response(jsonify(new_row), 201)
 
     return res
-
-@app.route('/temp/<int:id>', methods=['GET'])
-@swag_from('./docs/get_temp.yml')
-def get_by_id(id):
-    temp = CityTemperature.query.filter_by(id=id).first()
-    if temp:
-        return make_response(jsonify(temp), 200)
-    else:
-        return make_response(jsonify({'message': 'Id not found'}), 400)
 
 @app.route('/top', methods=['POST'])
 @swag_from('./docs/top.yml')
@@ -88,6 +79,9 @@ def top():
 
     return make_response(jsonify(top_temperatures), 200)
 
+@app.route('/')
+def index():
+    return redirect('apidocs', code=303)
 
 if __name__ == '__main__':
     app.run()

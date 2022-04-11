@@ -7,7 +7,6 @@ from sqlalchemy.orm import validates
 @dataclass
 class CityTemperature(db.Model):
     __tablename__ = 'city_temperature'
-    id: int
     dt: date
     temperature: float
     uncertainty: float
@@ -16,14 +15,13 @@ class CityTemperature(db.Model):
     latitude: str
     longitude: str
 
-    id = db.Column(db.Integer, primary_key=True)
-    dt = db.Column(db.Date)
+    dt = db.Column(db.Date, primary_key=True)
     temperature = db.Column(db.Float)
     uncertainty = db.Column(db.Float)
-    city = db.Column(db.String)
+    city = db.Column(db.String, primary_key=True)
     country = db.Column(db.String)
-    latitude = db.Column(db.String)
-    longitude = db.Column(db.String)
+    latitude = db.Column(db.String, primary_key=True)
+    longitude = db.Column(db.String, primary_key=True)
 
     @validates('temperature')
     def validate_temperature(self, key, temp):
@@ -39,5 +37,5 @@ class CityTemperature(db.Model):
 
     def __repr__(self):
         return f"""
-            {self.id}, {self.dt}, {self.temperature}, {self.uncertainty}, {self.city}
+            {self.dt}, {self.temperature}, {self.uncertainty}, {self.city}
         """

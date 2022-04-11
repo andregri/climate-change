@@ -1,14 +1,13 @@
 -- Creation of product table
 CREATE TABLE IF NOT EXISTS city_temperature (
-  id SERIAL,
-  dt DATE,
+  dt DATE NOT NULL,
   temperature FLOAT,
   uncertainty FLOAT,
-  city TEXT,
+  city TEXT NOT NULL,
   country TEXT,
-  latitude TEXT,
-  longitude TEXT,
-  PRIMARY KEY (id)
+  latitude TEXT NOT NULL,
+  longitude TEXT NOT NULL,
+  PRIMARY KEY (city, dt, latitude, longitude)
 );
 
 COPY city_temperature(dt, temperature, uncertainty, city, country, latitude, longitude)

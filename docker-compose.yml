@@ -17,7 +17,8 @@ services:
       - web_network
       - db_network
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     build: ./db
@@ -27,6 +28,12 @@ services:
       - db_data:/var/lib/postgresql/data
     networks:
       - db_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U andrea -d climate_db"]
+      interval: 30s
+      start_period: 1m30s
+      timeout: 30s
+      retries: 3
 
 volumes:
   db_data: {}

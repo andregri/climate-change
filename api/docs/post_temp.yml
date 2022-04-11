@@ -10,27 +10,30 @@ definitions:
       dt:
         type: string
         format: date
+        example: '2022-03-01'
       temperature:
         type: number
-        example: 17.2
+        example: 39.256
       uncertainty:
         type: number
-        example: 1.2
+        example: 0.37
       city:
         type: string
-        example: Genoa
+        example: Ahvaz
       country:
         type: string
-        example: Italy
+        example: Iran
       latitude:
         type: string
-        example: 44.4N
+        example: 31.35N
       longitude:
         type: string
-        example: 8.9E
+        example: 49.01E
     required:
       - dt
       - city
+      - latitude
+      - longitude
 
 parameters:
   - in: body

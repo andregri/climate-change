@@ -10,15 +10,15 @@ definitions:
     properties:
       n:
         type: integer
-        example: 5
+        example: 1
       start_date:
         type: string
         format: date
-        example: "1970-01-01"
+        example: "2000-01-01"
       end_date:
         type: string
         format: date
-        example: "2022-06-05"
+        example: "2022-05-01"
     required:
       - n
       - start_date

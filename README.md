@@ -39,7 +39,7 @@ and it is visible at [/apidocs](http://127.0.0.1:5000/apidocs)
 ## Question A
 Find the entry whose city has the highest AverageTemperature since the year 2000.
 
-Curl request:
+You can do the request from Flasgger or from curl:
 ```
 curl -X POST "http://127.0.0.1:5000/top" -H  "accept: application/json" -H  "Content-Type: application/json" -d "{  \"end_date\": \"2022-05-01\",  \"n\": 1,  \"start_date\": \"2000-01-01\"}"
 ```
@@ -51,7 +51,6 @@ Response body:
     "city": "Ahvaz",
     "country": "Iran",
     "dt": "Mon, 01 Jul 2013 00:00:00 GMT",
-    "id": 117010,
     "latitude": "31.35N",
     "longitude": "49.01E",
     "temperature": 39.15600000000001,
@@ -65,13 +64,19 @@ Following question A: assume the temperature observation of the city last month 
 
 Curl request:
 ```
-curl -X POST "http://127.0.0.1:5000/temp" -H  "accept: application/json" -H  "Content-Type: application/json" -d "{    \"city\": \"Ahvaz\",    \"country\": \"Iran\",    \"dt\": \"2022-03-01\",    \"latitude\": \"31.35N\",    \"longitude\": \"49.01E\",    \"temperature\": 39.25600000000001,    \"uncertainty\": 0.37}"
+curl -X POST "http://127.0.0.1:5000/temp" -H  "accept: application/json" -H  "Content-Type: application/json" -d "{  \"city\": \"Ahvaz\",  \"country\": \"Iran\",  \"dt\": \"2022-03-01\",  \"latitude\": \"31.35N\",  \"longitude\": \"49.01E\",  \"temperature\": 39.256,  \"uncertainty\": 0.37}"
 ```
 
-Response body:
+Response body with status code 201:
 ```
 {
-  "message": "Row 8599213 created"
+  "city": "Ahvaz",
+  "country": "Iran",
+  "dt": "Tue, 01 Mar 2022 00:00:00 GMT",
+  "latitude": "31.35N",
+  "longitude": "49.01E",
+  "temperature": 39.256,
+  "uncertainty": 0.37
 }
 ```
 
@@ -80,13 +85,19 @@ Following question A: assume the returned entry has been found erroneous. The ac
 
 Curl request:
 ```
-curl -X POST "http://127.0.0.1:5000/temp" -H  "accept: application/json" -H  "Content-Type: application/json" -d "{    \"city\": \"Ahvaz\",    \"country\": \"Iran\",    \"dt\": \"2013-07-01\",    \"latitude\": \"31.35N\",    \"longitude\": \"49.01E\",    \"temperature\": 36.656,    \"uncertainty\": 0.37}"
+curl -X POST "http://127.0.0.1:5000/temp" -H  "accept: application/json" -H  "Content-Type: application/json" -d "{  \"city\": \"Ahvaz\",  \"country\": \"Iran\",  \"dt\": \"2013-07-01\",  \"latitude\": \"31.35N\",  \"longitude\": \"49.01E\",  \"temperature\": 36.656,  \"uncertainty\": 0.37}"
 ```
 
-Response body:
+Response body with status code 200:
 ```
 {
-  "message": "Row 117010 updated"
+  "city": "Ahvaz",
+  "country": "Iran",
+  "dt": "Mon, 01 Jul 2013 00:00:00 GMT",
+  "latitude": "31.35N",
+  "longitude": "49.01E",
+  "temperature": 36.656,
+  "uncertainty": 0.37
 }
 ```
 
@@ -98,5 +109,5 @@ Response body:
 | Friday 8 | 3 |
 | Saturday 9 | 1 |
 | Sunday 10 | 3 |
-| Monday 11 | |
-| **Total** | **10** |
+| Monday 11 | 2 |
+| **Total** | **12** |
