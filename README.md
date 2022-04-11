@@ -1,9 +1,20 @@
 # Climate Change API
-A restful API implemented with **Python Flask** to navigate the monthly average temperatures of cities in the world.
+This repo contains a restful API implemented with **Python Flask** to explore
+the monthly average temperatures of cities around the world.
 
-The dataset is loaded in a **Postgresql** database.
+The dataset is loaded in a **Postgresql** database. I chose Postgresql because it is open-source.
+If necessary, it can be extended with PostGIS to manage geographic objects such as latitudes
+and longitudes. However, **MySQL** could have been another possible choice.
 
 The backend server and the database are containerized using **Docker** and **docker-compose**.
+For the database image, I copied a `.sql` file with the instructions to create a table and
+copying the data from the `.csv` file. These instructions are executed when docker-compose
+starts a container from the database image. Since the api container depends on the
+database container, I needed a way to know when the database server was ready to accept connections.
+I partially solved this issue by adding a healthcheck that probes if the database is created.
+
+For documenting the API I chose **Flasgger** because is easy to use with Flask and
+provides a nice SwaggerUI to visualize and test the routes.
 
 # Requirements
 Download and extract the dataset [GlobalLandTemperaturesByCity.csv](https://www.kaggle.com/datasets/berkeleyearth/climate-change-earth-surface-temperature-data?select=GlobalLandTemperaturesByCity.csv) into `db` folder.
