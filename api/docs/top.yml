@@ -1,5 +1,4 @@
-Return the top N cities that have the highest monthly AverageTemperature in
-a specified time range
+Return the top N cities that have the highest monthly AverageTemperature in a specified time range
 ---
 tags:
   - Temperature

@@ -18,15 +18,15 @@ from models import CityTemperature
 def create():
     request_data = request.get_json()
 
-    if not 'dt' in request_data:
-        return make_response(jsonify({'message': 'You must specify a value for dt'}), 400)
-    
-    if not 'city' in request_data:
-        return make_response(jsonify({'message': 'You must specify a value for city'}), 400)
+    # Check that request json body has the valus for the composite key columns,
+    # otherwise return an error message.
+    primary_keys = ['dt', 'city', 'latitude', 'longitude']
+    if not all([k in request_data for k in primary_keys]):
+        msg = 'You must specify a value for dt, city, latitude, longitude'
+        return make_response(jsonify({'message': msg}), 400)
 
-    date = request_data['dt']
-    city = request_data['city']
-    row = CityTemperature.query.filter_by(city=city, dt=date).first()
+    # Update the row if it exists in the database
+    row = CityTemperature.query.filter_by(**request_data).first()
     if row:
         try:
             row.temperature = request_data['temperature']
@@ -36,7 +36,7 @@ def create():
         else:
             db.session.commit()
             res = make_response(jsonify(row), 200)
-        
+    # Create a new row if it does not exists in the database
     else:
         try:
             new_row = CityTemperature(**request_data)
@@ -53,15 +53,24 @@ def create():
 @swag_from('./docs/top.yml')
 def top():
     request_data = request.get_json()
+
+    # Check that the request body contains all required keys
+    if not all([k in request_data for k in ['n', 'start_date', 'end_date']]):
+        msg = 'You must specify a value for n, start_date, end_date'
+        return make_response(jsonify({'message': msg}), 400)
+
+    # Check that request data are valid
     n = request_data['n']
-    if n and n <= 0:
-        return make_response(jsonify({'message': 'Invalid n'}), 400)
+    if n <= 0:
+        return make_response(jsonify({'message': 'Missing or Invalid n'}), 400)
 
     start_date = request_data['start_date']
     end_date = request_data['end_date']
     if start_date >= end_date:
-        return make_response(jsonify({'message': 'end_date must be later the start_date'}), 400)
+        return make_response(jsonify({'message': 'end_date must be later than start_date'}), 400)
 
+    # Group max temperature by city and filter date between start_date and end_date.
+    # Then order by max temperature and limit the number of results.
     subq = db.session.query(
             func.max(CityTemperature.temperature).label('max_temp'),
             CityTemperature.city
@@ -73,6 +82,7 @@ def top():
         .limit(n) \
         .subquery()
 
+    # Join the subquery to get all columns
     top_temperatures = db.session.query(CityTemperature). \
         join(subq, and_(CityTemperature.city==subq.c.city, CityTemperature.temperature==subq.c.max_temp)). \
         order_by(desc(CityTemperature.temperature)).all()
